@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 #define MAX_CARROS 100
 
@@ -32,19 +33,43 @@ void limparTela()
     system("clear||cls");
 }
 
+void removerBL(char *str)
+{
+    int tamanho = strlen(str);
+    if (tamanho > 0 && str[tamanho - 1] == '\n')
+    {
+        str[tamanho - 1] = '\0';
+    }
+}
+
+void pausar()
+{
+    printf("Pressione Enter para continuar...");
+    getchar();
+}
+
 // FUNÇÕES CARRO
 Carro CriarCarro()
 {
     Carro carro;
     printf("======= Adicionar Carro =======\n");
+
     printf("Proprietário do veículo: ");
     fgets(carro.proprietario, MAX_PROPRIETARIO, stdin);
+    removerBL(carro.proprietario);
+
     printf("Marca do veículo: ");
     fgets(carro.marca, MAX_MARCA, stdin);
+    removerBL(carro.marca);
+
     printf("Modelo do veículo: ");
     fgets(carro.modelo, MAX_MODELO, stdin);
+    removerBL(carro.modelo);
+
     printf("Digite o chassi do carro: ");
     fgets(carro.chassi, MAX_CHASSI, stdin);
+    removerBL(carro.chassi);
+
     printf("Digite o ano do carro: ");
     scanf("%d", &carro.ano);
     limparBuffer();
@@ -63,12 +88,10 @@ void ListarCarros(Carro carros[], int quantidade)
     }
     printf("\n==================================\n");
 
-    printf("Pressione ENTER para continuar...");
-    getchar();
-    limparTela();
+    pausar();
 }
 
-void criandoCarros(Carro carros[], int *qntCarros)
+void CriandoCarros(Carro carros[], int *qntCarros)
 {
     limparTela();
     int continuar = 1;
@@ -79,8 +102,10 @@ void criandoCarros(Carro carros[], int *qntCarros)
             carros[i] = CriarCarro();
             (*qntCarros)++;
 
-            printf("Deseja adicionar outro carro? (1 - Sim | 0 - Não): ");
+            printf("Deseja adicionar outro carro? 1 - Sim | 0 - Não: ");
             scanf("%d", &continuar);
+            limparBuffer();
+
             if (continuar == 0)
                 break;
         }
@@ -88,6 +113,37 @@ void criandoCarros(Carro carros[], int *qntCarros)
     else
     {
         printf("Limite de carros atingido!\n");
+        pausar();
+    }
+}
+
+void RemoverCarro(Carro carros[], int *qntCarros)
+{
+    limparTela();
+    if (*qntCarros == 0)
+    {
+        printf("Nenhum carro cadastrado!\n");
+        return;
+    }
+
+    ListarCarros(carros, *qntCarros);
+
+    int id;
+    printf("Digite o ID do carro a ser removido: ");
+    scanf("%d", &id);
+    limparBuffer();
+
+    int index = id - 1;
+    if (id < 0 || id >= *qntCarros)
+    {
+        printf("ID inválido!\n");
+        return;
+    }
+
+    for (int i = index; i < *qntCarros - 1; i++)
+    {
+        carros[i] = carros[i + 1];
+        (*qntCarros)--;
     }
 }
 
@@ -98,6 +154,7 @@ int menu(Carro carros[], int *qntCarros)
 
     do
     {
+        limparTela();
         printf("========== Menu ==========\n");
 
         printf("1 - Adicionar Carro\n");
@@ -119,7 +176,7 @@ int menu(Carro carros[], int *qntCarros)
     switch (opcao)
     {
     case 1:
-        criandoCarros(carros, qntCarros);
+        CriandoCarros(carros, qntCarros);
         return 1;
         break;
     case 2:
@@ -127,7 +184,7 @@ int menu(Carro carros[], int *qntCarros)
         return 1;
         break;
     case 3:
-        printf("remover carro\n");
+        RemoverCarro(carros, qntCarros);
         return 1;
         break;
     case 0:
