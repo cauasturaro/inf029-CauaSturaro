@@ -95,47 +95,38 @@ int q1(char data[])
   int datavalida = 1;
 
   // quebrar a string data em strings sDia, sMes, sAno
-  quebraData(data);
+  DataQuebrada dq = quebraData(data);
 
-  if (strlen(data) < 8)
-  {
-    return 0;
-  }
-
-  char sDia[3];
-  char sMes[3];
-  char sAno[3];
-
-  sDia[0] = data[0];
-  sDia[1] = data[1];
-
-  sMes[0] = data[3];
-  sMes[1] = data[4];
-
-  sAno[0] = data[6];
-  sAno[1] = data[7];
-
-  sDia[2] = '\0';
-  sMes[2] = '\0';
-  sAno[2] = '\0';
-
-  int dias = atoi(sDia);
-  int mes = atoi(sMes);
-  int ano = atoi(sAno);
-
-  if (dias <= 0 || dias > 30)
+  if (dq.iDia <= 0 || dq.iDia > 30)
   {
     datavalida = 0;
   }
 
-  if (mes <= 0 || mes > 12)
+  if (dq.iMes <= 0 || dq.iMes > 12)
   {
     datavalida = 0;
   }
 
-  if (ano < 0 || ano > 9999)
+  if (dq.iAno < 0 || dq.iAno > 9999)
   {
     datavalida = 0;
+  }
+
+  // ano bissexto
+  int bissexto = (dq.iAno % 400 == 0 || (dq.iAno % 4 == 0 && dq.iAno % 100 != 0));
+
+  if (dq.iMes == 2)
+  {
+    if (bissexto)
+    {
+      if (dq.iDia > 29)
+        datavalida = 0;
+    }
+    else
+    {
+      if (dq.iDia > 28)
+        datavalida = 0;
+    }
   }
 
   if (datavalida)
@@ -158,33 +149,30 @@ int q1(char data[])
     4 -> datainicial > datafinal
     Caso o cálculo esteja correto, os atributos qtdDias, qtdMeses e qtdAnos devem ser preenchidos com os valores correspondentes.
  */
-DiasMesesAnos q2(char datainicial[], char datafinal[])
-{
+// DiasMesesAnos q2(char datainicial[], char datafinal[])
+// {
 
-  // calcule os dados e armazene nas três variáveis a seguir
-  DiasMesesAnos dma;
+//   // calcule os dados e armazene nas três variáveis a seguir
+//   DiasMesesAnos dma;
 
-  if (q1(datainicial) == 0)
-  {
-    dma.retorno = 2;
-    return dma;
-  }
-  else if (q1(datafinal) == 0)
-  {
-    dma.retorno = 3;
-    return dma;
-  }
-  else
-  {
-    // verifique se a data final não é menor que a data inicial
+//   if (q1(datainicial) == 0)
+//   {
+//     dma.retorno = 2;
+//     return dma;
+//   }
+//   else if (q1(datafinal) == 0)
+//   {
+//     dma.retorno = 3;
+//     return dma;
+//   }
+//   else
+//   {
 
-    // calcule a distancia entre as datas
-
-    // se tudo der certo
-    dma.retorno = 1;
-    return dma;
-  }
-}
+//     // se tudo der certo
+//     dma.retorno = 1;
+//     return dma;
+//   }
+// }
 
 /*
  Q3 = encontrar caracter em texto
