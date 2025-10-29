@@ -149,30 +149,54 @@ int q1(char data[])
     4 -> datainicial > datafinal
     Caso o cálculo esteja correto, os atributos qtdDias, qtdMeses e qtdAnos devem ser preenchidos com os valores correspondentes.
  */
-// DiasMesesAnos q2(char datainicial[], char datafinal[])
-// {
+DiasMesesAnos q2(char datainicial[], char datafinal[])
+{
 
-//   // calcule os dados e armazene nas três variáveis a seguir
-//   DiasMesesAnos dma;
+  // calcule os dados e armazene nas três variáveis a seguir
+  DiasMesesAnos dma;
 
-//   if (q1(datainicial) == 0)
-//   {
-//     dma.retorno = 2;
-//     return dma;
-//   }
-//   else if (q1(datafinal) == 0)
-//   {
-//     dma.retorno = 3;
-//     return dma;
-//   }
-//   else
-//   {
+  if (q1(datainicial) == 0)
+  {
+    dma.retorno = 2;
+    return dma;
+  }
+  else if (q1(datafinal) == 0)
+  {
+    dma.retorno = 3;
+    return dma;
+  }
+  else
+  {
+    DataQuebrada dq1 = quebraData(datainicial);
+    DataQuebrada dq2 = quebraData(datafinal);
 
-//     // se tudo der certo
-//     dma.retorno = 1;
-//     return dma;
-//   }
-// }
+    // verifique se a data final não é menor que a data inicial
+    if (dq2.iAno < dq1.iAno)
+    {
+      dma.retorno = 4;
+      return dma;
+    }
+    else if (dq2.iMes < dq1.iMes)
+    {
+      dma.retorno = 4;
+      return dma;
+    }
+    else if (dq2.iDia < dq1.iDia)
+    {
+      dma.retorno = 4;
+      return dma;
+    }
+
+    // calcule a distancia entre as datas
+    dma.qtdAnos = dq2.iAno - dq1.iAno;
+    dma.qtdMeses = dq2.iMes - dq1.iMes;
+    dma.qtdDias = dq2.iDia - dq1.iDia;
+
+    // se tudo der certo
+    dma.retorno = 1;
+    return dma;
+  }
+}
 
 /*
  Q3 = encontrar caracter em texto
