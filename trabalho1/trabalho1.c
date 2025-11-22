@@ -10,10 +10,10 @@
 //  O aluno deve preencher seus dados abaixo, e implementar as questões do trabalho
 
 //  ----- Dados do Aluno -----
-//  Nome: Cauã Sales Sturaro
-//  email: sturaro.contato@gmail.com
-//  Matrícula: 20251160015
-//  Semestre: 2025.2
+//  Nome:
+//  email:
+//  Matrícula:
+//  Semestre:
 
 //  Copyright © 2016 Renato Novais. All rights reserved.
 // Última atualização: 07/05/2021 - 19/08/2016 - 17/10/2025
@@ -24,7 +24,7 @@
 #include "trabalho1.h"
 #include <stdlib.h>
 #include <string.h>
-#include <ctype.h>
+#include <ctype.h> // tolower
 
 DataQuebrada quebraData(char data[]);
 
@@ -94,23 +94,46 @@ int teste(int a)
 int q1(char data[])
 {
   int datavalida = 1;
+
+  // quebrar a string data em strings sDia, sMes, sAno
   DataQuebrada dq = quebraData(data);
-  if (!dq.valido)
-    return 0;
 
-  if (dq.iDia <= 0 || dq.iMes <= 0 || dq.iMes > 12 || dq.iAno < 0)
-    return 0;
+  if (dq.iDia <= 0 || dq.iDia > 30)
+  {
+    datavalida = 0;
+  }
 
-  int diasMes[] = {0, 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
+  if (dq.iMes <= 0 || dq.iMes > 12)
+  {
+    datavalida = 0;
+  }
 
+  if (dq.iAno < 0)
+  {
+    datavalida = 0;
+  }
+
+  // ano bissexto
   int bissexto = (dq.iAno % 400 == 0 || (dq.iAno % 4 == 0 && dq.iAno % 100 != 0));
-  if (dq.iMes == 2 && bissexto)
-    diasMes[2] = 29;
 
-  if (dq.iDia > diasMes[dq.iMes])
+  if (dq.iMes == 2)
+  {
+    if (bissexto)
+    {
+      if (dq.iDia > 29)
+        datavalida = 0;
+    }
+    else
+    {
+      if (dq.iDia > 28)
+        datavalida = 0;
+    }
+  }
+
+  if (datavalida)
+    return 1;
+  else
     return 0;
-
-  return 1;
 }
 
 /*
@@ -141,54 +164,34 @@ DiasMesesAnos q2(char datainicial[], char datafinal[])
     dma.retorno = 3;
     return dma;
   }
-
-  DataQuebrada dq1 = quebraData(datainicial);
-  DataQuebrada dq2 = quebraData(datafinal);
-
-  if (dq2.iAno < dq1.iAno || (dq2.iAno == dq1.iAno && dq2.iMes < dq1.iMes) || (dq2.iAno == dq1.iAno && dq2.iMes == dq1.iMes && dq2.iDia < dq1.iDia))
+  else
   {
-    dma.retorno = 4;
+    DataQuebrada dq1 = quebraData(datainicial);
+    DataQuebrada dq2 = quebraData(datafinal);
+
+    if (dq2.iAno < dq1.iAno)
+    {
+      dma.retorno = 4;
+      return dma;
+    }
+    else if (dq2.iMes < dq1.iMes)
+    {
+      dma.retorno = 4;
+      return dma;
+    }
+    else if (dq2.iDia < dq1.iDia)
+    {
+      dma.retorno = 4;
+      return dma;
+    }
+
+    dma.qtdAnos = dq2.iAno - dq1.iAno;
+    dma.qtdMeses = dq2.iMes - dq1.iMes;
+    dma.qtdDias = dq2.iDia - dq1.iDia;
+
+    dma.retorno = 1;
     return dma;
   }
-
-  int diasMes[] = {0, 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
-
-  int bissexto = (dq2.iAno % 400 == 0 || (dq2.iAno % 4 == 0 && dq2.iAno % 100 != 0));
-  if (dq2.iMes == 2 && bissexto)
-    diasMes[2] = 29;
-
-  dma.qtdAnos = dq2.iAno - dq1.iAno;
-  dma.qtdMeses = dq2.iMes - dq1.iMes;
-  dma.qtdDias = dq2.iDia - dq1.iDia;
-
-  if (dma.qtdDias < 0)
-  {
-    dma.qtdMeses--;
-
-    if (dq2.iMes == 1)
-    {
-      int bissextoAnt = ((dq2.iAno - 1) % 400 == 0 || ((dq2.iAno - 1) % 4 == 0 && (dq2.iAno - 1) % 100 != 0));
-      dma.qtdDias += bissextoAnt ? 29 : 31;
-    }
-    else
-    {
-      int mesAnt = dq2.iMes - 1;
-
-      if (mesAnt == 2 && (dq2.iAno % 400 == 0 || (dq2.iAno % 4 == 0 && dq2.iAno % 100 != 0)))
-        dma.qtdDias += 29;
-      else
-        dma.qtdDias += diasMes[mesAnt];
-    }
-  }
-
-  if (dma.qtdMeses < 0)
-  {
-    dma.qtdAnos--;
-    dma.qtdMeses += 12;
-  }
-
-  dma.retorno = 1;
-  return dma;
 }
 
 /*
@@ -252,6 +255,7 @@ int q4(char *strTexto, char *strBusca, int posicoes[30])
   int qtdOcorrencias = 0;
   int tamTexto = strlen(strTexto);
   int tamBusca = strlen(strBusca);
+
   for (int i = 0; i <= tamTexto - tamBusca; i++)
   {
     int encontrou = 1;
@@ -263,6 +267,7 @@ int q4(char *strTexto, char *strBusca, int posicoes[30])
         break;
       }
     }
+
     if (encontrou)
     {
       posicoes[2 * qtdOcorrencias] = i + 1;
@@ -270,6 +275,7 @@ int q4(char *strTexto, char *strBusca, int posicoes[30])
       qtdOcorrencias++;
     }
   }
+
   return qtdOcorrencias;
 }
 
@@ -286,22 +292,14 @@ int q4(char *strTexto, char *strBusca, int posicoes[30])
 int q5(int num)
 {
   int numInvertido = 0;
-  int negativo = 0;
-  if (num == 0)
-    return 0;
-  if (num < 0)
-  {
-    negativo = 1;
-    num = -num;
-  }
+
   while (num > 0)
   {
     int digito = num % 10;
     numInvertido = numInvertido * 10 + digito;
     num = num / 10;
   }
-  if (negativo)
-    numInvertido = -numInvertido;
+
   return numInvertido;
 }
 
@@ -515,7 +513,7 @@ DataQuebrada quebraData(char data[])
 
   if (i == 2 || i == 4)
   {                 // testa se tem 2 ou 4 digitos
-    sAno[i] = '\0'; // coloca o \0 no final
+    sAno[i] = '\0'; // coloca o barra zero no final
   }
   else
   {
